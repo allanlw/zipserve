@@ -107,11 +107,14 @@ func (wfs *wrappedFileSystem) String() string {
 	return wfs.wrapped.String()
 }
 
+// Takes an FSCloser and returns a new FSCloser with an additional
+// Close method
 func WrapFSCloserWithCloser(fs FSCloser, closer io.Closer) FSCloser {
 	return &wrappedFileSystem{fs, closer}
 }
 
-// FakeDirFileInfo
+// FakeDirFileInfo is just a os.FileInfo that has nothing but a name
+// and says it's a directory
 type FakeDirFileInfo struct {
 	name string
 }
