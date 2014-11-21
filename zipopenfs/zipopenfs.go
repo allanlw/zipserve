@@ -1,4 +1,4 @@
-package main
+package zipopenfs
 
 import (
 	"archive/zip"
@@ -12,6 +12,8 @@ import (
 	"golang.org/x/tools/godoc/vfs"
 )
 
+// A ZipOpenFS is a vfs.FileSystem that treats
+// zip files as directores instead of as regular files
 type ZipOpenFS struct {
 	fs vfs.FileSystem
 }

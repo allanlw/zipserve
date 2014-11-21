@@ -1,0 +1,17 @@
+This package contains a golang/vfs compatible FileSystem that wraps 
+another file system, and interprets any zip files found within it as 
+directores instead, allowing dynamic access into the contents of the 
+file.
+
+This is useful in combination with the golang/vfs/httpfs module, so that 
+a web server can be easily created that can serve content from zip 
+inside zip files efficiently and getting all the benefits of using an 
+http.FileSystem, such as Caching, etc.
+
+The code in `zipfs/zipfs.go` is the same as in the godoc vfs with a few 
+minor changes to support ReadDir on the base of the zip file and also to 
+support zip.Reader instead of zip.ReadCloser. It is copyright the Go 
+Authors.
+
+The rest of the code is Copyright Allan Wirth (2014) and is released 
+under the same 3-clause BSD license as go - see `LICENSE`.
