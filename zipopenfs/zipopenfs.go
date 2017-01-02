@@ -8,7 +8,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/allanlw/zipserve/zipfs"
+	"golang.org/x/tools/godoc/vfs/zipfs"
 	"golang.org/x/tools/godoc/vfs"
 )
 
@@ -24,6 +24,12 @@ func NewZipOpeningFS(fs vfs.FileSystem) FSCloser {
 
 func (fs *ZipOpenFS) String() string {
 	return "Zip opening fs on (" + fs.fs.String() + ")"
+}
+
+func zipReaderToReadCloser(reader *zip.Reader) *zip.ReadCloser {
+	var res zip.ReadCloser
+	res.Reader = *reader
+	return &res
 }
 
 // Returns a ReadSeekCloser (with an emphasis on Close), and an error
@@ -53,7 +59,7 @@ func (fs *ZipOpenFS) recursively_open(prefix string, parts []string) (vfs.ReadSe
 	}
 
 	// Closing the zipfs should also close the backing file
-	zfs := WrapFSCloserWithCloser(zipfs.New(zr, prefix).(FSCloser), fh)
+	zfs := WrapFSCloserWithCloser(zipfs.New(zipReaderToReadCloser(zr), prefix).(FSCloser), fh)
 
 	opened, err := zfs.Open(path.Join("/", path.Join(parts...)))
 	if err != nil {
@@ -109,7 +115,7 @@ func (fs *ZipOpenFS) recursively_stat(prefix string, parts []string, link bool) 
 		return nil, err
 	}
 
-	zfs := zipfs.New(zr, prefix).(FSCloser)
+	zfs := zipfs.New(zipReaderToReadCloser(zr), prefix).(FSCloser)
 	defer zfs.Close()
 
 	inner := path.Join("/", path.Join(parts...))
@@ -189,7 +195,7 @@ func (fs *ZipOpenFS) recursively_readdir(prefix string, parts []string) ([]os.Fi
 		return nil, err
 	}
 
-	zfs := zipfs.New(zr, prefix).(FSCloser)
+	zfs := zipfs.New(zipReaderToReadCloser(zr), prefix).(FSCloser)
 	defer zfs.Close()
 
 	return zfs.ReadDir(path.Join("/", path.Join(parts...)))
